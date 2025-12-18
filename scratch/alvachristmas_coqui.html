@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AlvaChristmas · El Viaje del Coquí Rey</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #021225 0, #000 55%, #000 100%);
+      color: #f7f9ff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .shell {
+      width: min(960px, 100%);
+      border-radius: 22px;
+      padding: 16px 20px 20px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,0,80,0.14));
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 0 24px rgba(0,0,0,0.9),
+        0 0 40px rgba(0,255,180,0.25);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow:
+        0 0 10px rgba(0,255,180,0.7),
+        0 0 20px rgba(0,180,255,0.8);
+    }
+
+    .subtitle {
+      font-size: 0.75rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #ffe9f0;
+      opacity: 0.9;
+    }
+
+    .hud {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.35);
+      background: radial-gradient(circle at top, rgba(0,0,0,0.9), rgba(255,255,255,0.06));
+    }
+
+    .label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.68rem;
+      opacity: 0.8;
+    }
+
+    .value {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .timer {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #ffe48a;
+    }
+
+    .lives {
+      color: #ffb6c1;
+    }
+
+    .game-wrap {
+      margin-top: 10px;
+      border-radius: 18px;
+      padding: 10px;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.09), transparent 55%),
+        radial-gradient(circle at bottom, rgba(255,0,80,0.18), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+
+    canvas {
+      display: block;
+      margin: auto;
+      border-radius: 14px;
+      background: linear-gradient(
+        to bottom,
+        #020b1a 0,
+        #021b34 40%,
+        #02263f 65%,
+        #043027 80%,
+        #071812 100%
+      );
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 24px rgba(0,0,0,0.9);
+    }
+
+    .footer {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.78rem;
+      color: #f4ffff;
+      flex-wrap: wrap;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 10px;
+    }
+
+    .key-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.35);
+      background: rgba(0,0,0,0.35);
+    }
+
+    .key {
+      border-radius: 4px;
+      padding: 1px 5px;
+      border: 1px solid rgba(255,255,255,0.5);
+      font-size: 0.7rem;
+      background: rgba(255,255,255,0.07);
+    }
+
+    .hint-label {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.68rem;
+      opacity: 0.85;
+    }
+
+    .tip {
+      opacity: 0.9;
+      font-size: 0.76rem;
+    }
+
+    @media (max-width: 720px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .footer {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div style="
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 9999;
+  display: flex;
+  gap: 10px;
+">
+
+  <a href="../index.html"
+     style="
+       padding: 10px 14px;
+       border-radius: 14px;
+       background: rgba(0,0,0,0.6);
+       color: white;
+       text-decoration: none;
+       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+       font-size: 14px;
+       backdrop-filter: blur(6px);
+     ">
+    ← Resume
+  </a>
+
+  <a href="scratch/scratch.html"
+     style="
+       padding: 10px 14px;
+       border-radius: 14px;
+       background: rgba(200,0,0,0.6);
+       color: white;
+       text-decoration: none;
+       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+       font-size: 14px;
+       backdrop-filter: blur(6px);
+     ">
+    Scratch Page
+  </a>
+
+</div>
+
+  <div class="shell">
+    <header>
+      <div class="title-block">
+        <h1>ALVACHRISTMAS</h1>
+        <div class="subtitle">El Viaje del Coquí Rey</div>
+      </div>
+      <div class="hud">
+        <div class="badge">
+          <span class="label">Coquí</span>
+          <span class="value" id="coquiNameDisplay">---</span>
+        </div>
+        <div class="badge">
+          <span class="label">Score</span>
+          <span class="value" id="scoreDisplay">0</span>
+        </div>
+        <div class="badge">
+          <span class="label">Time</span>
+          <span class="timer" id="timeDisplay">0</span>
+        </div>
+        <div class="badge">
+          <span class="label">Lives</span>
+          <span class="value lives" id="livesDisplay">3</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="game-wrap">
+      <canvas id="game" width="800" height="480"></canvas>
+    </div>
+
+    <div class="footer">
+      <div class="controls">
+        <div class="key-hint">
+          <span class="key">A</span><span class="key">D</span>
+          <span class="hint-label"> or </span>
+          <span class="key">←</span><span class="key">→</span>
+          <span class="hint-label">Mover coquí</span>
+        </div>
+        <div class="key-hint">
+          <span class="key">Space</span>
+          <span class="hint-label">Start / Continuar</span>
+        </div>
+        <div class="key-hint">
+          <span class="key">Enter</span>
+          <span class="hint-label">Elegir coquí</span>
+        </div>
+      </div>
+      <div class="tip">
+        Parrandas, Nochebuena, lechón en la montaña, el pesebre, y los Reyes visitando a la familia en todo el mundo. 🐸✨
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========== BASIC CANVAS SETUP ===========
+    var canvas = document.getElementById("game");
+    var ctx = canvas.getContext("2d");
+    var WIDTH = canvas.width;
+    var HEIGHT = canvas.height;
+    var GROUND_Y = HEIGHT - 70;
+
+    // HUD elements
+    var coquiNameDisplay = document.getElementById("coquiNameDisplay");
+    var scoreDisplay = document.getElementById("scoreDisplay");
+    var timeDisplay = document.getElementById("timeDisplay");
+    var livesDisplay = document.getElementById("livesDisplay");
+
+    // =========== INPUT ===========
+    var keys = {};
+    document.addEventListener("keydown", function (e) {
+      var code = e.keyCode || e.which;
+      // Prevent browser scroll
+      if (code === 32 || (code >= 37 && code <= 40)) {
+        e.preventDefault();
+      }
+      keys[code] = true;
+
+      // Global scene-level shortcuts
+      if (code === 32) { // Space
+        handleSpacePress();
+      }
+      if (code === 13) { // Enter
+        handleEnterPress();
+      }
+    });
+
+    document.addEventListener("keyup", function (e) {
+      var code = e.keyCode || e.which;
+      keys[code] = false;
+    });
+
+    // =========== GAME STATE ===========
+    var coquiNames = [
+      "Miguelito","Natalie","Myah","Liam","Luca",
+      "Nastacha","Heròn","Cari Lu","Georgie","Cari Anne",
+      "Trennon","Nixon","Lana","Kelli","Connor",
+      "Chucho","Vidmari","Coki","Adrian","Eva",
+      "Marivid","Jova","Jovi","Jaden","Jacob","Kailani"
+    ];
+
+    var state = {
+      scene: "menu", // menu, characterSelect, level, nativity, reyes, ending
+      selectedCoquiIndex: 0,
+      coquiName: "",
+      score: 0,
+      lives: 3,
+      levelIndex: 0,
+      timeLeft: 0,
+      runningLevel: false
+    };
+
+    // Levels configuration: each is a "catch the items" level
+    var levels = [
+      {
+        id: "parranda",
+        title: "La Parranda",
+        description: "Música, panderos y coquito. Atrapa cosas buenas, esquiva las malas.",
+        duration: 35,
+        goodTypes: ["coquito","maraca","plato"],
+        badTypes: ["coco"],
+        bgTone: "parranda"
+      },
+      {
+        id: "nochebuena",
+        title: "La Cocina de Nochebuena",
+        description: "Pasteles, arroz con gandules, arroz con dulce de Abuela Iris.",
+        duration: 35,
+        goodTypes: ["pastel","arroz","dulce"],
+        badTypes: ["aceite"],
+        bgTone: "kitchen"
+      },
+      {
+        id: "lechon",
+        title: "Lechón en la Montaña",
+        description: "Sube la montaña, recoge lechón y evita obstáculos.",
+        duration: 35,
+        goodTypes: ["lechon","estrella"],
+        badTypes: ["piedra"],
+        bgTone: "montana"
+      }
+    ];
+
+    // Reyes level is similar mechanics with different items
+    var reyesLevel = {
+      id: "reyes",
+      title: "Con los Reyes al Mundo",
+      description: "Los 3 Reyes Magos llevan regalos a la familia en Puerto Rico, Utah, Idaho, Arizona, Vegas y España.",
+      duration: 40,
+      goodTypes: ["regalo","zapato","pasto"],
+      badTypes: ["distraccion"],
+      bgTone: "reyes"
+    };
+
+    // =========== LEVEL RUNTIME STATE ===========
+    var player = {
+      x: WIDTH / 2 - 50,
+      y: GROUND_Y,
+      w: 100,
+      h: 20,
+      speed: 350
+    };
+
+    var items = [];
+    var spawnTimer = 0;
+    var spawnInterval = 0.7; // seconds
+    var frameCount = 0;
+
+    var lastTime = 0;
+
+    // =========== SCENE HELPERS ===========
+    function setScene(newScene) {
+      state.scene = newScene;
+      if (newScene === "menu") {
+        state.levelIndex = 0;
+        state.score = 0;
+        state.lives = 3;
+        state.coquiName = "";
+        state.selectedCoquiIndex = 0;
+        state.runningLevel = false;
+      } else if (newScene === "characterSelect") {
+        state.selectedCoquiIndex = 0;
+      } else if (newScene === "level") {
+        startCurrentLevel();
+      } else if (newScene === "nativity") {
+        state.timeLeft = 16; // seconds of quiet / text
+      } else if (newScene === "reyes") {
+        startReyesLevel();
+      } else if (newScene === "ending") {
+        state.timeLeft = 999; // static end
+      }
+    }
+
+    function startCurrentLevel() {
+      var def = levels[state.levelIndex];
+      state.timeLeft = def.duration;
+      state.runningLevel = true;
+      items = [];
+      spawnTimer = 0;
+      player.x = WIDTH / 2 - player.w / 2;
+      updateHUD();
+    }
+
+    function startReyesLevel() {
+      state.timeLeft = reyesLevel.duration;
+      state.runningLevel = true;
+      items = [];
+      spawnTimer = 0;
+      player.x = WIDTH / 2 - player.w / 2;
+      updateHUD();
+    }
+
+    function updateHUD() {
+      coquiNameDisplay.textContent = state.coquiName || "---";
+      scoreDisplay.textContent = state.score;
+      livesDisplay.textContent = state.lives;
+      timeDisplay.textContent = Math.max(0, Math.ceil(state.timeLeft));
+    }
+
+    // =========== INPUT HANDLERS FOR SCENES ===========
+    function handleSpacePress() {
+      if (state.scene === "menu") {
+        setScene("characterSelect");
+      } else if (state.scene === "characterSelect") {
+        confirmCoquiSelection();
+      } else if (state.scene === "level") {
+        // toggle pause? For now, ignore
+      } else if (state.scene === "nativity") {
+        // allow skipping
+        state.timeLeft = 0.1;
+      } else if (state.scene === "reyes") {
+        // nothing special
+      } else if (state.scene === "ending") {
+        // restart to menu
+        setScene("menu");
+      }
+    }
+
+    function handleEnterPress() {
+      if (state.scene === "characterSelect") {
+        confirmCoquiSelection();
+      }
+    }
+
+    function confirmCoquiSelection() {
+      state.coquiName = coquiNames[state.selectedCoquiIndex];
+      coquiNameDisplay.textContent = state.coquiName;
+      state.score = 0;
+      state.lives = 3;
+      state.levelIndex = 0;
+      setScene("level");
+    }
+
+    // =========== UPDATE FUNCTIONS ===========
+    function update(delta) {
+      if (state.scene === "menu") {
+        // nothing dynamic
+        return;
+      } else if (state.scene === "characterSelect") {
+        updateCharacterSelect(delta);
+      } else if (state.scene === "level") {
+        updateLevel(delta);
+      } else if (state.scene === "nativity") {
+        updateNativity(delta);
+      } else if (state.scene === "reyes") {
+        updateReyes(delta);
+      } else if (state.scene === "ending") {
+        // nothing
+      }
+    }
+
+    function updateCharacterSelect(delta) {
+      // change selection with up/down or left/right
+      if (keys[38] || keys[87]) { // up/W
+        moveSelection(-1);
+        keys[38] = false;
+        keys[87] = false;
+      } else if (keys[40] || keys[83]) { // down/S
+        moveSelection(1);
+        keys[40] = false;
+        keys[83] = false;
+      } else if (keys[37] || keys[65]) { // left/A
+        moveSelection(-1);
+        keys[37] = false;
+        keys[65] = false;
+      } else if (keys[39] || keys[68]) { // right/D
+        moveSelection(1);
+        keys[39] = false;
+        keys[68] = false;
+      }
+    }
+
+    function moveSelection(offset) {
+      state.selectedCoquiIndex += offset;
+      if (state.selectedCoquiIndex < 0) state.selectedCoquiIndex = coquiNames.length - 1;
+      if (state.selectedCoquiIndex >= coquiNames.length) state.selectedCoquiIndex = 0;
+    }
+
+    function updateLevel(delta) {
+      if (!state.runningLevel) return;
+
+      var def = levels[state.levelIndex];
+
+      state.timeLeft -= delta;
+      if (state.timeLeft <= 0) {
+        state.timeLeft = 0;
+        updateHUD();
+        // proceed to next level or nativity
+        state.levelIndex++;
+        if (state.levelIndex >= levels.length) {
+          setScene("nativity");
+        } else {
+          setScene("level");
+        }
+        return;
+      }
+      updateHUD();
+
+      // Player movement
+      var move = 0;
+      if (keys[65] || keys[37]) move -= 1; // A or Left
+      if (keys[68] || keys[39]) move += 1; // D or Right
+      player.x += move * player.speed * delta;
+      if (player.x < 0) player.x = 0;
+      if (player.x + player.w > WIDTH) player.x = WIDTH - player.w;
+
+      // spawn items
+      spawnTimer += delta;
+      var currentInterval = spawnInterval;
+      if (def.id === "lechon") currentInterval = 0.5;
+      if (spawnTimer >= currentInterval) {
+        spawnLevelItem(def);
+        spawnTimer = 0;
+      }
+
+      // update items
+      for (var i = items.length - 1; i >= 0; i--) {
+        var it = items[i];
+        it.y += it.vy * delta;
+
+        // collision
+        if (rectOverlap(player.x, player.y, player.w, player.h, it.x, it.y, it.size, it.size)) {
+          handleItemCollision(def, it);
+          items.splice(i, 1);
+          continue;
+        }
+
+        // off-screen
+        if (it.y > HEIGHT + 40) {
+          items.splice(i, 1);
+        }
+      }
+    }
+
+    function updateNativity(delta) {
+      state.timeLeft -= delta;
+      if (state.timeLeft <= 0) {
+        // after nativity, go to Reyes
+        setScene("reyes");
+      }
+    }
+
+    function updateReyes(delta) {
+      if (!state.runningLevel) return;
+
+      state.timeLeft -= delta;
+      if (state.timeLeft <= 0) {
+        state.timeLeft = 0;
+        updateHUD();
+        setScene("ending");
+        return;
+      }
+      updateHUD();
+
+      // player movement
+      var move = 0;
+      if (keys[65] || keys[37]) move -= 1;
+      if (keys[68] || keys[39]) move += 1;
+      player.x += move * player.speed * delta;
+      if (player.x < 0) player.x = 0;
+      if (player.x + player.w > WIDTH) player.x = WIDTH - player.w;
+
+      spawnTimer += delta;
+      var currentInterval = 0.65;
+      if (spawnTimer >= currentInterval) {
+        spawnReyesItem();
+        spawnTimer = 0;
+      }
+
+      for (var i = items.length - 1; i >= 0; i--) {
+        var it = items[i];
+        it.y += it.vy * delta;
+
+        if (rectOverlap(player.x, player.y, player.w, player.h, it.x, it.y, it.size, it.size)) {
+          handleReyesCollision(it);
+          items.splice(i, 1);
+          continue;
+        }
+
+        if (it.y > HEIGHT + 40) {
+          items.splice(i, 1);
+        }
+      }
+    }
+
+    // =========== ITEM SPAWN / COLLISION ===========
+    function spawnLevelItem(def) {
+      var size = 22 + Math.random() * 12;
+      var x = Math.random() * (WIDTH - size);
+      var speed = 110 + Math.random() * 170;
+      var good = Math.random() < 0.7;
+      var type;
+      if (good) {
+        type = def.goodTypes[Math.floor(Math.random() * def.goodTypes.length)];
+      } else {
+        type = def.badTypes[Math.floor(Math.random() * def.badTypes.length)];
+      }
+      items.push({
+        x: x,
+        y: -size,
+        size: size,
+        vy: speed,
+        type: type
+      });
+    }
+
+    function handleItemCollision(def, item) {
+      var t = item.type;
+      var badList = def.badTypes;
+      var isBad = false;
+      for (var i = 0; i < badList.length; i++) {
+        if (badList[i] === t) {
+          isBad = true;
+          break;
+        }
+      }
+
+      if (isBad) {
+        state.lives -= 1;
+        if (state.lives <= 0) {
+          state.lives = 0;
+          updateHUD();
+          // game over? go ending
+          setScene("ending");
+          return;
+        }
+      } else {
+        // scoring by type
+        if (t === "coquito" || t === "maraca" || t === "pastel" || t === "lechon" || t === "arroz") {
+          state.score += 2;
+        } else if (t === "dulce" || t === "estrella") {
+          state.score += 3;
+        } else if (t === "plato") {
+          state.score += 1;
+        }
+      }
+      updateHUD();
+    }
+
+    function spawnReyesItem() {
+      var size = 22 + Math.random() * 12;
+      var x = Math.random() * (WIDTH - size);
+      var speed = 110 + Math.random() * 160;
+      var good = Math.random() < 0.75;
+      var type;
+      if (good) {
+        var arr = reyesLevel.goodTypes;
+        type = arr[Math.floor(Math.random() * arr.length)];
+      } else {
+        var arrb = reyesLevel.badTypes;
+        type = arrb[Math.floor(Math.random() * arrb.length)];
+      }
+      items.push({
+        x: x,
+        y: -size,
+        size: size,
+        vy: speed,
+        type: type
+      });
+    }
+
+    function handleReyesCollision(item) {
+      var t = item.type;
+      if (t === "regalo") {
+        state.score += 3;
+      } else if (t === "zapato" || t === "pasto") {
+        state.score += 2;
+      } else if (t === "distraccion") {
+        state.lives -= 1;
+        if (state.lives <= 0) {
+          state.lives = 0;
+          updateHUD();
+          setScene("ending");
+          return;
+        }
+      }
+      updateHUD();
+    }
+
+    function rectOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
+      return ax < bx + bw &&
+             ax + aw > bx &&
+             ay < by + bh &&
+             ay + ah > by;
+    }
+
+    // =========== DRAW FUNCTIONS ===========
+    function draw() {
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+      if (state.scene === "menu") {
+        drawBackgroundGeneric();
+        drawMenu();
+      } else if (state.scene === "characterSelect") {
+        drawBackgroundGeneric();
+        drawCharacterSelect();
+      } else if (state.scene === "level") {
+        drawLevelScene();
+      } else if (state.scene === "nativity") {
+        drawNativityScene();
+      } else if (state.scene === "reyes") {
+        drawReyesScene();
+      } else if (state.scene === "ending") {
+        drawBackgroundGeneric();
+        drawEndingScene();
+      }
+    }
+
+    function drawBackgroundGeneric() {
+      // simple stars over gradient
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      for (var i = 0; i < 40; i++) {
+        var x = (i * 71 + frameCount * 0.3) % WIDTH;
+        var y = (i * 37) % (HEIGHT * 0.6);
+        var r = (i % 6 === 0) ? 2 : 1;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawPuertoRicoFlag(x, y, w, h) {
+      var stripeH = h / 5;
+      ctx.fillStyle = "#ed1c24";
+      ctx.fillRect(x, y, w, stripeH);
+      ctx.fillRect(x, y + 2 * stripeH, w, stripeH);
+      ctx.fillRect(x, y + 4 * stripeH, w, stripeH);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x, y + stripeH, w, stripeH);
+      ctx.fillRect(x, y + 3 * stripeH, w, stripeH);
+
+      ctx.fillStyle = "#0052a5";
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + w * 0.45, y + h / 2);
+      ctx.lineTo(x, y + h);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      var cx = x + w * 0.17;
+      var cy = y + h / 2;
+      var outerR = h * 0.16;
+      var innerR = outerR * 0.45;
+      var rot = -Math.PI / 2;
+      var spikes = 5;
+      var step = Math.PI / spikes;
+      ctx.moveTo(cx, cy - outerR);
+      for (var i = 0; i < spikes; i++) {
+        var px = cx + Math.cos(rot) * outerR;
+        var py = cy + Math.sin(rot) * outerR;
+        ctx.lineTo(px, py);
+        rot += step;
+        px = cx + Math.cos(rot) * innerR;
+        py = cy + Math.sin(rot) * innerR;
+        ctx.lineTo(px, py);
+        rot += step;
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawCoqui(x, y, s) {
+      ctx.save();
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "#7CFC00";
+      ctx.fillStyle = "#7CFC00";
+      ctx.beginPath();
+      ctx.arc(x + s / 2, y + s / 2, s / 2.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#000";
+      var ex = x + s * 0.3;
+      var ey = y + s * 0.35;
+      ctx.beginPath();
+      ctx.arc(ex, ey, s * 0.08, 0, Math.PI * 2);
+      ctx.arc(x + s * 0.7, ey, s * 0.08, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawPlayer() {
+      // Use coquí sprite on top of little platform
+      var s = 36;
+      drawCoqui(player.x + player.w / 2 - s / 2, player.y - s + 4, s);
+
+      // little glowing platform
+      ctx.save();
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = "#19ff78";
+      ctx.fillStyle = "rgba(25,255,120,0.6)";
+      ctx.fillRect(player.x, player.y, player.w, player.h);
+      ctx.restore();
+    }
+
+    function drawMenu() {
+      drawPuertoRicoFlag(18, 18, 110, 66);
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "26px system-ui";
+      ctx.fillText("AlvaChristmas: El Viaje del Coquí Rey", WIDTH / 2, HEIGHT / 2 - 60);
+      ctx.font = "18px system-ui";
+      ctx.fillText("Un coquí recorre la Navidad boricua con Cristo en el centro.", WIDTH / 2, HEIGHT / 2 - 20);
+      ctx.font = "16px system-ui";
+      ctx.fillText("Parrandas, Nochebuena, lechón en la montaña, el pesebre y los Reyes Magos.", WIDTH / 2, HEIGHT / 2 + 10);
+      ctx.fillText("Presiona SPACE para comenzar", WIDTH / 2, HEIGHT / 2 + 48);
+      ctx.restore();
+    }
+
+    function drawCharacterSelect() {
+      drawPuertoRicoFlag(18, 18, 110, 66);
+      ctx.save();
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "24px system-ui";
+      ctx.fillText("Elige tu coquí", 40, 120);
+
+      ctx.font = "15px system-ui";
+      ctx.fillText("Usa ↑/↓/←/→ o A/S/D/W para mover, ENTER o SPACE para seleccionar.", 40, 150);
+
+      ctx.font = "18px system-ui";
+      var colWidth = 220;
+      var startX = 60;
+      var startY = 190;
+      for (var i = 0; i < coquiNames.length; i++) {
+        var col = i % 3;
+        var row = Math.floor(i / 3);
+        var x = startX + col * colWidth;
+        var y = startY + row * 26;
+
+        if (i === state.selectedCoquiIndex) {
+          ctx.fillStyle = "#ffe48a";
+          ctx.fillText("> " + coquiNames[i], x, y);
+        } else {
+          ctx.fillStyle = "#f7f9ff";
+          ctx.fillText(coquiNames[i], x + 16, y);
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function drawLevelBackground(def) {
+      ctx.save();
+      // base stars
+      ctx.fillStyle = "rgba(255,255,255,0.6)";
+      for (var i = 0; i < 35; i++) {
+        var x = (i * 57 + frameCount * 0.25) % WIDTH;
+        var y = (i * 31) % (HEIGHT * 0.5);
+        var r = (i % 5 === 0) ? 2 : 1;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (def.bgTone === "parranda") {
+        // houses and music vibe
+        ctx.fillStyle = "#03101b";
+        ctx.fillRect(0, HEIGHT * 0.6, WIDTH, HEIGHT * 0.4);
+
+        ctx.fillStyle = "#04263b";
+        for (var h = 0; h < 8; h++) {
+          var hx = h * 110;
+          ctx.fillRect(hx + 10, HEIGHT * 0.6 - 40, 80, 40);
+        }
+
+        ctx.fillStyle = "#ffd966";
+        for (var l = 0; l < 50; l++) {
+          var lx = (l * 50 + frameCount * 0.7) % WIDTH;
+          var ly = HEIGHT * 0.6 - 18 + Math.sin((lx + frameCount) * 0.02) * 6;
+          ctx.beginPath();
+          ctx.arc(lx, ly, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+      } else if (def.bgTone === "kitchen") {
+        ctx.fillStyle = "#1f1510";
+        ctx.fillRect(0, HEIGHT * 0.5, WIDTH, HEIGHT * 0.5);
+        ctx.fillStyle = "#4a2b18";
+        ctx.fillRect(40, HEIGHT * 0.5 - 30, WIDTH - 80, 30);
+      } else if (def.bgTone === "montana") {
+        ctx.fillStyle = "#021a19";
+        ctx.beginPath();
+        ctx.moveTo(0, HEIGHT * 0.65);
+        ctx.lineTo(WIDTH * 0.18, HEIGHT * 0.52);
+        ctx.lineTo(WIDTH * 0.35, HEIGHT * 0.6);
+        ctx.lineTo(WIDTH * 0.5, HEIGHT * 0.5);
+        ctx.lineTo(WIDTH * 0.7, HEIGHT * 0.62);
+        ctx.lineTo(WIDTH * 0.9, HEIGHT * 0.54);
+        ctx.lineTo(WIDTH, HEIGHT * 0.6);
+        ctx.lineTo(WIDTH, HEIGHT);
+        ctx.lineTo(0, HEIGHT);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // ground strip
+      ctx.fillStyle = "#013b32";
+      ctx.fillRect(0, GROUND_Y + 10, WIDTH, HEIGHT - (GROUND_Y + 10));
+
+      ctx.restore();
+    }
+
+    function drawLevelScene() {
+      var def = levels[state.levelIndex];
+      drawLevelBackground(def);
+      drawItems(def);
+      drawPlayer();
+
+      // Title overlay small
+      ctx.save();
+      ctx.fillStyle = "rgba(0,0,0,0.4)";
+      ctx.fillRect(0, 0, WIDTH, 40);
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "18px system-ui";
+      ctx.fillText(def.title, WIDTH / 2, 26);
+      ctx.restore();
+    }
+
+    function drawItems(def) {
+      for (var i = 0; i < items.length; i++) {
+        var it = items[i];
+        var t = it.type;
+
+        if (t === "coquito") drawCoquito(it.x, it.y, it.size);
+        else if (t === "maraca") drawMaraca(it.x, it.y, it.size);
+        else if (t === "plato") drawPlato(it.x, it.y, it.size);
+        else if (t === "coco") drawCoco(it.x, it.y, it.size);
+        else if (t === "pastel") drawPastel(it.x, it.y, it.size);
+        else if (t === "arroz") drawArroz(it.x, it.y, it.size);
+        else if (t === "dulce") drawDulce(it.x, it.y, it.size);
+        else if (t === "aceite") drawAceite(it.x, it.y, it.size);
+        else if (t === "lechon") drawLechon(it.x, it.y, it.size);
+        else if (t === "estrella") drawEstrella(it.x, it.y, it.size);
+        else if (t === "piedra") drawPiedra(it.x, it.y, it.size);
+      }
+    }
+
+    // Item drawings
+    function drawCoquito(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#f5e6c4";
+      ctx.fillRect(x + s * 0.3, y, s * 0.4, s);
+      ctx.fillStyle = "#8b5a2b";
+      ctx.fillRect(x + s * 0.3, y - s * 0.15, s * 0.4, s * 0.2);
+      ctx.restore();
+    }
+
+    function drawMaraca(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#ffcc00";
+      ctx.beginPath();
+      ctx.arc(x + s / 2, y + s / 2.4, s / 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#ff4b5a";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x + s / 2, y + s / 2);
+      ctx.lineTo(x + s / 2, y + s);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawPlato(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#f4f4f4";
+      ctx.beginPath();
+      ctx.arc(x + s / 2, y + s / 2, s / 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawCoco(x, y, s) {
+      ctx.save();
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = "#8B4513";
+      ctx.fillStyle = "#8B4513";
+      ctx.beginPath();
+      ctx.arc(x + s / 2, y + s / 2, s / 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#2c1305";
+      ctx.beginPath();
+      ctx.arc(x + s * 0.4, y + s * 0.4, s * 0.06, 0, Math.PI * 2);
+      ctx.arc(x + s * 0.6, y + s * 0.4, s * 0.06, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawPastel(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#7c5a35";
+      ctx.fillRect(x, y + s * 0.2, s, s * 0.5);
+      ctx.strokeStyle = "#3a2b16";
+      ctx.strokeRect(x, y + s * 0.2, s, s * 0.5);
+      ctx.restore();
+    }
+
+    function drawArroz(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#f7b200";
+      ctx.fillRect(x, y + s * 0.3, s, s * 0.4);
+      ctx.restore();
+    }
+
+    function drawDulce(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#ffe0b2";
+      ctx.beginPath();
+      ctx.arc(x + s / 2, y + s / 2, s / 2.6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawAceite(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#ffcc33";
+      ctx.fillRect(x + s * 0.3, y, s * 0.4, s);
+      ctx.restore();
+    }
+
+    function drawLechon(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#c96f4a";
+      ctx.fillRect(x, y + s * 0.3, s, s * 0.4);
+      ctx.restore();
+    }
+
+    function drawEstrella(x, y, s) {
+      ctx.save();
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "#ffe66d";
+      ctx.fillStyle = "#ffe66d";
+      ctx.beginPath();
+      var cx = x + s / 2;
+      var cy = y + s / 2;
+      var outerR = s / 2.4;
+      var innerR = outerR * 0.5;
+      var rot = -Math.PI / 2;
+      var spikes = 5;
+      var step = Math.PI / spikes;
+      ctx.moveTo(cx, cy - outerR);
+      for (var i = 0; i < spikes; i++) {
+        var px = cx + Math.cos(rot) * outerR;
+        var py = cy + Math.sin(rot) * outerR;
+        ctx.lineTo(px, py);
+        rot += step;
+        px = cx + Math.cos(rot) * innerR;
+        py = cy + Math.sin(rot) * innerR;
+        ctx.lineTo(px, py);
+        rot += step;
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawPiedra(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#555";
+      ctx.beginPath();
+      ctx.arc(x + s / 2, y + s / 2, s / 2.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Reyes items
+    function drawReyesItems() {
+      for (var i = 0; i < items.length; i++) {
+        var it = items[i];
+        var t = it.type;
+        if (t === "regalo") drawRegalo(it.x, it.y, it.size);
+        else if (t === "zapato") drawZapato(it.x, it.y, it.size);
+        else if (t === "pasto") drawPasto(it.x, it.y, it.size);
+        else if (t === "distraccion") drawDistraccion(it.x, it.y, it.size);
+      }
+    }
+
+    function drawRegalo(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#ff2f5e";
+      ctx.fillRect(x, y, s, s);
+      ctx.fillStyle = "#f6f6ff";
+      ctx.fillRect(x + s * 0.45, y, s * 0.1, s);
+      ctx.fillRect(x, y + s * 0.45, s, s * 0.1);
+      ctx.restore();
+    }
+
+    function drawZapato(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#8b5a2b";
+      ctx.fillRect(x, y + s * 0.4, s, s * 0.3);
+      ctx.fillRect(x + s * 0.4, y + s * 0.15, s * 0.4, s * 0.25);
+      ctx.restore();
+    }
+
+    function drawPasto(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#28a745";
+      for (var i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.moveTo(x + i * (s / 5), y + s);
+        ctx.lineTo(x + i * (s / 5) + s / 10, y + s * 0.5);
+        ctx.lineTo(x + i * (s / 5) + s / 5, y + s);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawDistraccion(x, y, s) {
+      ctx.save();
+      ctx.fillStyle = "#999";
+      ctx.beginPath();
+      ctx.arc(x + s / 2, y + s / 2, s / 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawNativityScene() {
+      ctx.save();
+      // warm gradient
+      var grad = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+      grad.addColorStop(0, "#1b1b35");
+      grad.addColorStop(0.4, "#4b2e2e");
+      grad.addColorStop(1, "#2b1d10");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+      // star
+      drawEstrella(WIDTH / 2 - 20, 40, 40);
+
+      // simple stable
+      ctx.fillStyle = "#3b2616";
+      ctx.fillRect(WIDTH / 2 - 80, HEIGHT * 0.5, 160, 80);
+      ctx.fillStyle = "#2a1a0d";
+      ctx.fillRect(WIDTH / 2 - 100, HEIGHT * 0.5 - 20, 200, 20);
+
+      // manger glow
+      ctx.fillStyle = "rgba(255, 230, 150, 0.7)";
+      ctx.beginPath();
+      ctx.arc(WIDTH / 2, HEIGHT * 0.5 + 60, 40, 0, Math.PI * 2);
+      ctx.fill();
+
+      // coquí kneeling
+      drawCoqui(WIDTH / 2 - 18, HEIGHT * 0.5 + 20, 36);
+
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "22px system-ui";
+      ctx.fillText("En el centro de todo está Jesucristo.", WIDTH / 2, HEIGHT * 0.25);
+      ctx.font = "16px system-ui";
+      ctx.fillText("“Él es la Luz del Mundo.”", WIDTH / 2, HEIGHT * 0.25 + 26);
+      ctx.fillText("Tu coquí hace una pausa para adorarlo, antes de seguir con los Reyes.", WIDTH / 2, HEIGHT * 0.25 + 52);
+      ctx.fillText("Presiona SPACE para continuar", WIDTH / 2, HEIGHT - 40);
+
+      ctx.restore();
+    }
+
+    function drawReyesScene() {
+      ctx.save();
+      // gradient night sky
+      var grad = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+      grad.addColorStop(0, "#050522");
+      grad.addColorStop(0.5, "#132039");
+      grad.addColorStop(1, "#1a3b34");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+      // star of Bethlehem
+      drawEstrella(WIDTH * 0.2 - 20, 30, 40);
+
+      // ground strip
+      ctx.fillStyle = "#013b32";
+      ctx.fillRect(0, GROUND_Y + 10, WIDTH, HEIGHT - (GROUND_Y + 10));
+
+      // silhouettes of three kings
+      ctx.fillStyle = "#111";
+      var baseY = GROUND_Y + 22;
+      for (var i = 0; i < 3; i++) {
+        var kx = WIDTH * (0.4 + i * 0.15);
+        ctx.fillRect(kx, baseY - 50, 30, 50);
+        ctx.beginPath();
+        ctx.arc(kx + 15, baseY - 60, 12, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // simple "regions" text at top
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.font = "14px system-ui";
+      ctx.fillText("Puerto Rico · Utah · Idaho · Arizona · Vegas · España", WIDTH / 2, 20);
+
+      // items and player
+      drawReyesItems();
+      drawPlayer();
+
+      // title
+      ctx.fillStyle = "rgba(0,0,0,0.45)";
+      ctx.fillRect(0, 24, WIDTH, 36);
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "18px system-ui";
+      ctx.textAlign = "center";
+      ctx.fillText("Los 3 Reyes Magos visitan a los niños dondequiera que estén", WIDTH / 2, 48);
+
+      ctx.restore();
+    }
+
+    function drawEndingScene() {
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "24px system-ui";
+      ctx.fillText("Feliz AlvaChristmas", WIDTH / 2, HEIGHT / 2 - 60);
+      ctx.font = "18px system-ui";
+      ctx.fillText("Tu coquí recorrió la Navidad boricua,", WIDTH / 2, HEIGHT / 2 - 20);
+      ctx.fillText("adoró a Jesucristo y acompañó a los Reyes", WIDTH / 2, HEIGHT / 2 + 4);
+      ctx.fillText("a llevar alegría a la familia en Puerto Rico, Utah, Idaho, Arizona, Vegas y España.", WIDTH / 2, HEIGHT / 2 + 28);
+      ctx.font = "16px system-ui";
+      ctx.fillText("Puntaje final: " + state.score, WIDTH / 2, HEIGHT / 2 + 60);
+      ctx.fillText("Presiona SPACE para volver al inicio", WIDTH / 2, HEIGHT / 2 + 88);
+      ctx.restore();
+    }
+
+    // =========== MAIN LOOP ===========
+    function gameLoop(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      var delta = (timestamp - lastTime) / 1000;
+      if (delta > 0.05) delta = 0.05;
+      lastTime = timestamp;
+      frameCount++;
+
+      update(delta);
+      draw();
+
+      window.requestAnimationFrame(gameLoop);
+    }
+
+    // Start at menu
+    setScene("menu");
+    updateHUD();
+    window.requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
